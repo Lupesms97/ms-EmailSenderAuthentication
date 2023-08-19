@@ -9,36 +9,40 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
 
-@RestController("email")
+@RestController()
+@RequestMapping("/email")
 public class EmailContorller {
 
     @Autowired
     EmailService emailService;
 
-    @PostMapping("/sendEmail")
-    public ResponseEntity<Void> sendEmail(@RequestBody @Valid EmailDto emailDto){
+    @PostMapping("/sending-email")
+    public ResponseEntity<EmailModel> sendEmail(@RequestBody @Valid EmailDto emailDto) {
         EmailModel emailModel = new EmailModel();
         BeanUtils.copyProperties(emailDto, emailModel);
         emailService.sendEmail(emailModel);
-        return new ResponseEntity<>(HttpStatus.CREATED);
+        return new ResponseEntity<>(emailModel, HttpStatus.CREATED);
     }
 
     @GetMapping("/getEmails")
-    public List<EmailDto> getAll() {
+    public ResponseEntity<?> getAll() {
         EmailDto emailDto = new EmailDto();
         List<EmailDto> emailDtos = new ArrayList<>();
         List<EmailModel> emailModels = emailService.getAllEmails();
-        for (EmailModel email : emailModels) {
-            emailDtos.add(emailDto.convertForDto(email));
+        if(!emailModels.isEmpty()){
+            for (EmailModel email : emailModels) {
+                emailDtos.add(emailDto.convertForDto(email));
+            }
+            return ResponseEntity.ok(emailDtos);
+        } else {
+
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Nenhum email encontrado.");
         }
-        return emailDtos;
+
     }
 }

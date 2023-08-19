@@ -21,31 +21,24 @@ import java.util.UUID;
 @Table(name = "users")
 @Entity(name= "users")
 @EqualsAndHashCode(of=("id"))
-public class UserModel implements Serializable, UserDetails {
-
-    private static final long serialVersionUID = 1L;
-
+public class UserModel implements UserDetails {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private UUID id;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private String id;
     private String login;
     private String password;
     private UserRole role;
 
     public UserModel(String login, String password, UserRole role){
-
         this.login = login;
         this.password = password;
         this.role = role;
-
     }
-
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return (this.role==UserRole.ADMIN)?
-                List.of(new SimpleGrantedAuthority("admin"), new SimpleGrantedAuthority("user")):
-                List.of(new SimpleGrantedAuthority("user"));
+        if(this.role == UserRole.ADMIN) return List.of(new SimpleGrantedAuthority("ROLE_ADMIN"), new SimpleGrantedAuthority("ROLE_USER"));
+        else return List.of(new SimpleGrantedAuthority("ROLE_USER"));
     }
 
     @Override

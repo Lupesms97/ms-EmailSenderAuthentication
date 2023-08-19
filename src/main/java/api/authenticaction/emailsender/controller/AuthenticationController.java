@@ -1,9 +1,11 @@
 package api.authenticaction.emailsender.controller;
 
 import api.authenticaction.emailsender.dto.AuthenticationDto;
+import api.authenticaction.emailsender.dto.LoginResponseDto;
 import api.authenticaction.emailsender.dto.RegisterDto;
 import api.authenticaction.emailsender.model.UserModel;
 import api.authenticaction.emailsender.repositories.UserRepository;
+import api.authenticaction.emailsender.service.TokenService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -18,6 +20,9 @@ import org.springframework.web.bind.annotation.*;
 public class AuthenticationController {
 
     @Autowired
+    TokenService tokenService;
+
+    @Autowired
     AuthenticationManager authenticationManager;
 
     @Autowired
@@ -28,7 +33,9 @@ public class AuthenticationController {
         var usernamePassword = new UsernamePasswordAuthenticationToken(data.login(), data.password());
         var auth = authenticationManager.authenticate(usernamePassword);
 
-        return ResponseEntity.ok().build();
+        var token = tokenService.generateToken((UserModel) auth.getPrincipal());
+
+        return ResponseEntity.ok(new LoginResponseDto(token));
     }
 
     @PostMapping("/register")
