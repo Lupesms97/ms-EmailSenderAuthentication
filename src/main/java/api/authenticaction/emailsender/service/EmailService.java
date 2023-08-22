@@ -2,6 +2,7 @@ package api.authenticaction.emailsender.service;
 
 import api.authenticaction.emailsender.enums.StatusEmail;
 import api.authenticaction.emailsender.model.EmailModel;
+import api.authenticaction.emailsender.model.UserModel;
 import api.authenticaction.emailsender.repositories.EmailRepository;
 import jakarta.mail.internet.MimeMessage;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +22,9 @@ public class EmailService {
     EmailRepository emailRepository;
 
     @Autowired
+    UserService userService;
+
+    @Autowired
     private JavaMailSender javaMailSender;
 
     public EmailModel sendEmail(EmailModel emailModel){
@@ -31,11 +35,14 @@ public class EmailService {
 
             helper.setFrom(emailModel.getEmailFrom());
             helper.setTo(emailModel.getEmailTo());
-            helper.setCc("noreply.institutodajlmam@gmail.com");
             helper.setSubject(emailModel.getSubject());
             helper.setText(emailModel.getText(),true); // true indica que é conteúdo HTML
 
             javaMailSender.send(message);
+
+
+            emailModel.setUser(userService.update(emailModel));
+            emailModel.setStatusEmail(StatusEmail.SENT);
 
         }catch (MailException e){
             emailModel.setStatusEmail(StatusEmail.ERROR);

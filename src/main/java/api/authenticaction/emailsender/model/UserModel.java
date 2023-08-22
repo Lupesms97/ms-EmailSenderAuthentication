@@ -20,7 +20,7 @@ import java.util.UUID;
 @AllArgsConstructor
 @Table(name = "users")
 @Entity(name= "users")
-@EqualsAndHashCode(of=("id"))
+@EqualsAndHashCode(of="id")
 public class UserModel implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -28,12 +28,15 @@ public class UserModel implements UserDetails {
     private String login;
     private String password;
     private UserRole role;
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private List<EmailModel> emails;
 
     public UserModel(String login, String password, UserRole role){
         this.login = login;
         this.password = password;
         this.role = role;
     }
+
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

@@ -19,6 +19,7 @@ public class EmailModel implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "email_id")
     private UUID Emailid;
     private String ownerRef;
     private String emailFrom;
@@ -28,6 +29,11 @@ public class EmailModel implements Serializable {
     private String text;
     private LocalDateTime sendDateEmail;
     private StatusEmail statusEmail;
+    @ManyToOne()
+    @JoinTable(name = "user_email_id",
+            joinColumns = @JoinColumn(name = "email_id"),
+            inverseJoinColumns = @JoinColumn(name = "user_id"))
+    private UserModel user;
 
 
 }
