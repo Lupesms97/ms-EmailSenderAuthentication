@@ -9,6 +9,9 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -43,5 +46,14 @@ public class EmailContorller {
 
         return new ResponseEntity<>(responseEmailDtos, HttpStatus.OK);
 
+    }
+
+    @GetMapping("/getEmailSession")
+    public ResponseEntity<List<ResponseEmailDto>> getemails(){
+        List<EmailModel> emailModel = emailService.getListEmail();
+        List<ResponseEmailDto> responseEmailDtos = new ArrayList<>();
+        emailModel.forEach(email -> responseEmailDtos.add(new ResponseEmailDto(email.getUser().getLogin(), email.getEmailFrom(), email.getText())));
+
+        return new ResponseEntity<>(responseEmailDtos, HttpStatus.OK);
     }
 }

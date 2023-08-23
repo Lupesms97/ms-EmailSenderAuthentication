@@ -28,6 +28,9 @@ public class EmailService {
     EmailRepository emailRepository;
 
     @Autowired
+    AuthenticationService authenticationService;
+
+    @Autowired
     private JavaMailSender javaMailSender;
 
     public EmailModel sendEmail(String login,EmailModel emailModel){
@@ -82,4 +85,28 @@ public class EmailService {
 
 
     }
+
+    public List<EmailModel> getListEmail() {
+
+        String login = authenticationService.getUserbySession();
+
+        Optional<UserModel> userModelOptional = userRepository.findUserModelByLogin(login);
+        if (userModelOptional.isEmpty()) {
+
+            throw new UserNotFoundException("Usuário não encontrado com o login: " + login);
+
+        }else {
+            UserModel user = userModelOptional.get();
+            Optional<List<EmailModel>> emailOptional = emailRepository.findByUser_Login(user.getLogin());
+            if (emailOptional.isEmpty()) {
+                throw new UserNotFoundException("Email não encontrado com o login: " + login);
+            }
+            return emailOptional.get();
+
+        }
+
+
+    }
+
+
 }
