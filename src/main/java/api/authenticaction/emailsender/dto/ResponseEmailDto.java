@@ -1,9 +1,18 @@
 package api.authenticaction.emailsender.dto;
 
+import lombok.Data;
+import lombok.Getter;
 
-public record ResponseEmailDto(String userDto,String text,String emailTo) {
-    public ResponseEmailDto(EmailDto emailDto) {
-        this(emailDto.getUser().login(),emailDto.getText(),emailDto.getEmailTo());
+@Data
+@Getter
+public class ResponseEmailDto{
+    private String text;
+    private String emailTo ;
+    private String user;
+
+    public ResponseEmailDto(String user, String emailTo, String text) {
+        this.user = user;
+        this.emailTo = emailTo;
+        this.text = text;
     }
-
 }

@@ -9,11 +9,9 @@ import lombok.NoArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-
-import java.io.Serializable;
 import java.util.Collection;
 import java.util.List;
-import java.util.UUID;
+
 
 @Data
 @NoArgsConstructor
@@ -28,7 +26,7 @@ public class UserModel implements UserDetails {
     private String login;
     private String password;
     private UserRole role;
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<EmailModel> emails;
 
     public UserModel(String login, String password, UserRole role){

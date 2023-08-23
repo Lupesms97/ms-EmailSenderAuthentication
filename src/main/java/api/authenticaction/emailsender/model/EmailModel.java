@@ -14,7 +14,6 @@ import java.util.UUID;
 @Table(name = "TB_EMAIL")
 public class EmailModel implements Serializable {
 
-
     private static final long serialVersionUID = 1L;
 
     @Id
@@ -29,11 +28,14 @@ public class EmailModel implements Serializable {
     private String text;
     private LocalDateTime sendDateEmail;
     private StatusEmail statusEmail;
-    @ManyToOne()
-    @JoinTable(name = "user_email_id",
-            joinColumns = @JoinColumn(name = "email_id"),
-            inverseJoinColumns = @JoinColumn(name = "user_id"))
+    @ManyToOne
+    @JoinColumn(name = "users_id")
     private UserModel user;
+
+//    @JoinTable(name = "user_email_id",
+//            joinColumns = @JoinColumn(name = "email_id"),
+//            inverseJoinColumns = @JoinColumn(name = "user_id"))
+//    private UserModel user;
 
 
 }
