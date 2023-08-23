@@ -23,7 +23,6 @@ public class UserModel implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private String id;
-    @Column(unique = true)
     private String login;
     private String password;
     private UserRole role;
