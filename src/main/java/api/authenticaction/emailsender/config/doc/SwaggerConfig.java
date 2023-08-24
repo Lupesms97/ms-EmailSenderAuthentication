@@ -14,55 +14,77 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import static springfox.documentation.builders.PathSelectors.regex;
+
 @Configuration
-public class SwaggerConfig {
+@EnableSwagger2
+@Import(springfox.bean.validators.configuration.BeanValidatorPluginsConfiguration.class)
+public class SwaggerConfiguration {
 
     public static final String AUTHORIZATION_HEADER = "Authorization";
+    public static final String DEFAULT_INCLUDE_PATTERN = "/api/.*";
+    private final Logger log = LoggerFactory.getLogger(SwaggerConfiguration.class);
+
+    @Bean
+    public Docket swaggerSpringfoxDocket() {
+        log.debug("Starting Swagger");
+        Contact contact = new Contact(
+                "Matyas Albert-Nagy",
+                "https://justrocket.de",
+                "matyas@justrocket.de");
+
+        List<VendorExtension> vext = new ArrayList<>();
+        ApiInfo apiInfo = new ApiInfo(
+                "Backend API",
+                "This is the best stuff since sliced bread - API",
+                "6.6.6",
+                "https://justrocket.de",
+                contact,
+                "MIT",
+                "https://justrocket.de",
+                vext);
+
+        Docket docket = new Docket(DocumentationType.SWAGGER_2)
+                .apiInfo(apiInfo)
+                .pathMapping("/")
+                .apiInfo(ApiInfo.DEFAULT)
+                .forCodeGeneration(true)
+                .genericModelSubstitutes(ResponseEntity.class)
+                .ignoredParameterTypes(Pageable.class)
+                .ignoredParameterTypes(java.sql.Date.class)
+                .directModelSubstitute(java.time.LocalDate.class, java.sql.Date.class)
+                .directModelSubstitute(java.time.ZonedDateTime.class, Date.class)
+                .directModelSubstitute(java.time.LocalDateTime.class, Date.class)
+                .securityContexts(Lists.newArrayList(securityContext()))
+                .securitySchemes(Lists.newArrayList(apiKey()))
+                .useDefaultResponseMessages(false);
+
+        docket = docket.select()
+                .paths(regex(DEFAULT_INCLUDE_PATTERN))
+                .build();
+        watch.stop();
+        log.debug("Started Swagger in {} ms", watch.getTotalTimeMillis());
+        return docket;
+    }
+
 
     private ApiKey apiKey() {
         return new ApiKey("JWT", AUTHORIZATION_HEADER, "header");
     }
 
-    private ApiInfo apiInfo() {
-        return new ApiInfo(
-                "Spring Boot Blog REST APIs",
-                "Spring Boot Blog REST API Documentation",
-                "1",
-                "Terms of service",
-                new Contact(this.contact().getName(), contact().getUrl(), contact().getEmail()),
-                "License of API",
-                "API license URL",
-                Collections.emptyList()
-        );
-    }
-    private Contact contact() {
-        return new Contact(
-                "Luis Felipe Mota",
-                "https://www.github.com/Lupesms97",
-                "lupesms97@gmail.com");
-    }
-
-    @Bean
-    public Docket api() {
-        return new Docket(DocumentationType.SWAGGER_2)
-                .apiInfo(apiInfo())
-                .securityContexts(Arrays.asList(securityContext()))
-                .securitySchemes(Arrays.asList(apiKey()))
-                .select()
-                .apis(RequestHandlerSelectors.any())
-                .paths(PathSelectors.any())
+    private SecurityContext securityContext() {
+        return SecurityContext.builder()
+                .securityReferences(defaultAuth())
+                .forPaths(regex(DEFAULT_INCLUDE_PATTERN))
                 .build();
     }
 
-    private SecurityContext securityContext() {
-        return SecurityContext.builder().securityReferences(defaultAuth()).build();
-    }
-
-    private List<SecurityReference> defaultAuth() {
-        AuthorizationScope authorizationScope = new AuthorizationScope("global", "accessEverything");
+    List<SecurityReference> defaultAuth() {
+        AuthorizationScope authorizationScope
+                = new AuthorizationScope("global", "accessEverything");
         AuthorizationScope[] authorizationScopes = new AuthorizationScope[1];
         authorizationScopes[0] = authorizationScope;
-        return Arrays.asList(new SecurityReference("JWT", authorizationScopes));
+        return Lists.newArrayList(
+                new SecurityReference("JWT", authorizationScopes));
     }
-
 }
