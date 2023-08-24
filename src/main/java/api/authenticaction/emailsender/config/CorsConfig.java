@@ -12,7 +12,7 @@ public class CorsConfig implements WebMvcConfigurer {
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**")
-                .allowedOrigins("http://localhost:4200","http://localhost:8080","http://localhost:8081") // Adjust this to your frontend's origin
+                .allowedOrigins("http://localhost:4200","http://localhost:8080","http://localhost:8081","http://localhost:8080/swagger-ui/") // Adjust this to your frontend's origin
                 .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
                 .allowedHeaders("*")
                 .allowCredentials(true);
