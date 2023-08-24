@@ -44,7 +44,7 @@ public class AuthenticationController {
             return ResponseEntity.badRequest().body("Invalid username or password");
         }
     }
-
+//   Apenas ADMIN
     @PostMapping("/register")
     public ResponseEntity register(@RequestBody @Valid RegisterDto data){
         if(this.userRepository.findByLogin(data.login())!=null) return ResponseEntity.badRequest().build();

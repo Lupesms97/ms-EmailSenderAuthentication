@@ -37,7 +37,7 @@ public class EmailContorller {
 
         return new ResponseEntity<>(responseEmailDto, HttpStatus.ACCEPTED);
     }
-
+//    Apenas ADMIN
     @GetMapping("/getEmails/{login}")
     public ResponseEntity<List<ResponseEmailDto>> getEmailbyLogin(@PathVariable String login) {
         List<EmailModel> emailModel = emailService.getEmailByLogin(login);
