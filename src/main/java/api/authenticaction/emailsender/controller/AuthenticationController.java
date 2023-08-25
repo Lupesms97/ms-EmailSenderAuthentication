@@ -6,8 +6,6 @@ import api.authenticaction.emailsender.dto.RegisterDto;
 import api.authenticaction.emailsender.model.UserModel;
 import api.authenticaction.emailsender.repositories.UserRepository;
 import api.authenticaction.emailsender.service.TokenService;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -21,7 +19,6 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("auth")
-@Api(tags = "auth")
 public class AuthenticationController {
 
     @Autowired
@@ -34,7 +31,6 @@ public class AuthenticationController {
     UserRepository userRepository;
 
     @PostMapping("/login")
-    @ApiOperation(value = "Login - any user")
     public ResponseEntity<?> login(@RequestBody @Valid AuthenticationDto data){
         try {
             var usernamePassword = new UsernamePasswordAuthenticationToken(data.login(), data.password());
@@ -49,7 +45,6 @@ public class AuthenticationController {
     }
 //   Apenas ADMIN
     @PostMapping("/register")
-    @ApiOperation(value = "Register - only ADMIN")
     public ResponseEntity register(@RequestBody @Valid RegisterDto data){
         if(this.userRepository.findByLogin(data.login())!=null) return ResponseEntity.badRequest().build();
 
@@ -59,9 +54,6 @@ public class AuthenticationController {
         this.userRepository.save(newUser);
 
         return new ResponseEntity<>(HttpStatus.CREATED);
-
-
-
     }
 
 }

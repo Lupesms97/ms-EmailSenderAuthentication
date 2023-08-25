@@ -29,6 +29,7 @@ public class UserModel implements UserDetails {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<EmailModel> emails;
 
+
     public UserModel(String login, String password, UserRole role){
         this.login = login;
         this.password = password;
